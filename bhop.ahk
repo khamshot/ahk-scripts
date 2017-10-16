@@ -2,11 +2,12 @@
 *~$Space::
 Send, {Blind}{Space}
 Sleep 2
-Loop
-{
-	GetKeyState, state, Space, P
-	If state = U
-		Send, {Blind}{LShift up}
-	If state = D
-		Send, {Blind}{LShift down}
-}
+Loop{
+	GetKeyState,state,space,P
+		if state = U
+			break
+		Send,{space}
+		Sleep,20
+	}
+	return
+	

@@ -2,7 +2,8 @@
 ;----------
 
 global X, Y, Keys, Liste := 0, Liste1, Liste2, Liste3, Liste4, Liste5, Liste6
-;Gui Layout
+
+;Init
 ;----------
 
 FindAllPrograms()
@@ -120,3 +121,15 @@ $5::
 	}
 	return	
 	
+*f::
+	Send,f
+	MouseClick, left, 475, 479
+	Sleep 2
+	Loop{
+		GetKeyState,state,f,P
+		if state = U
+			break
+		Send,f
+		MouseClick, left, 475, 479
+		Sleep,20
+	}
