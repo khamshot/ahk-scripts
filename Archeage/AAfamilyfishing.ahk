@@ -1,4 +1,5 @@
-﻿;Globals
+﻿; !=Alt, ^=Ctrl and +=Shift
+;Globals
 ;----------
 
 global X, Y, Keys, Liste := 0, Liste1, Liste2, Liste3, Liste4, Liste5, Liste6

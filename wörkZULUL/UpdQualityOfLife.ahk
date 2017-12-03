@@ -1,7 +1,7 @@
 ﻿;Globals
 ;----------
 
-global GuiEnabled = false
+global GuiEnabled = 0
 
 ;Keybinds
 ;----------
@@ -9,11 +9,11 @@ global GuiEnabled = false
 ^+!f9::
   if GuiEnabled{
     DestroyGui()
-    GuiEnabled = false
+    GuiEnabled = 0
   }
   else{
     CreateGui()
-    GuiEnabled = true
+    GuiEnabled = 1
   }
 return
 
@@ -25,39 +25,26 @@ GuiClose:
 return
 
 QFset:
-  CompanyTag := GetInput("Kundentag eingeben")
-  if (ErrorLevel == 0)
-  {
-    IfWinExist, ahk_exe Skype.exe
-    {
-      WinActivate  
-      Send, {alt down}1{alt up}
-      Send, {shift down}{Tab}{Tab}{Tab}{Tab}{Tab}{Tab}{Tab}{shift up}
-      Send, msu allgemein
-      Send, {Enter}
-      Send, %CompanyTag% Datenbank wegen QuickFixStopp gesperrt. Benutzer werden gebeten die Datenbank zu verlassen.
-      Send, {Enter}
-    }
-  }
+  InputBox, CompanyTag, Eingabe: , Kundentag eingeben
+  SkypeText := " wegen Update gesperrt. Nutzer werden gebeten die Datenbank zu verlassen."
+  PostInSkypeChat(CompanyTag,SkypeText,"MSU chat")
 return
 
 QFdismiss:
-  CompanyTag := GetInput("Kundentag eingeben")
-  if (ErrorLevel == 0)
-  {
-    IfWinExist, ahk_exe Skype.exe
-    {
-      WinActivate  
-      Send, {alt down}1{alt up}
-      Send, {shift down}{Tab}{Tab}{Tab}{Tab}{Tab}{Tab}{Tab}{shift up}
-      Send, msu allgemein
-      Send, {Enter}
-      Send, %CompanyTag% Update erfolgreich durgeführt. Die Datenbank kann wieder genutzt werden.
-      Send, {Enter}
-    }
-  }
+  InputBox, CompanyTag, Eingabe:, Kundentag eingeben
+  SkypeText := " Update wurde durgeführt. Die Datenbank kann somit wieder genutzt werden."
+  PostInSkypeChat(CompanyTag,SkypeText,"MSU chat")
 return
 
+SetVersionTagSlow:
+  MsgBox, Alle zu taggenden Objekte im GitExt markieren und volle Pfade kopieren!!!
+  SetVersionTags(250)
+return
+
+SetVersionTagFast:
+  MsgBox, Alle zu taggenden Objekte im GitExt markieren und volle Pfade kopieren!!!
+  SetVersionTags(125)
+return
 
 ;Functions
 ;----------
@@ -66,17 +53,79 @@ CreateGui(){
   Gui, Font, cWhite
   Gui, Color, Black
 
-  Gui, Add, Button, x10 y10 gQFset, QF setzen / Skype
-  Gui, Add, Button, x130 y10 gQFdismiss, QF aufheben / Skype
+  Gui, Add, Text, x10 y15, UpdSperre / Skype :
+  Gui, Add, Button, x160 y10 gQFset, setzen
+  Gui, Add, Button, x210 y10 gQFdismiss, aufheben
   
-  Gui, Show, x500 y500 w500 h500, UpdateZULUL
+  Gui, Add, Text, x10 y55, VersionTag setzen / GitExt :
+  Gui, Add, Button, x160 y50 gSetVersionTagSlow, Slow
+  Gui, Add, Button, x210 y50 gSetVersionTagFast, Fast
+  
+  Gui, Show, x500 y500 w300 h300, UpdateZULUL
 }
 
 DestroyGui(){
   Gui, 1: Destroy
 }
 
-GetInput(RequestText){
-  InputBox, InString, Input String, %RequestText%, , 300, 150
-  return InString
+PostInSkypeChat(CompanyTag,SkypeText,SkypeChannel){
+  if ErrorLevel
+    return
+  IfWinExist, ahk_exe Skype.exe
+  {
+    WinActivate  
+    Loop
+      {
+        IfWinActive, ahk_exe Skype.exe
+        {
+          Send, {alt down}1{alt up}
+          Send, {shift down}{Tab}{Tab}{Tab}{Tab}{Tab}{Tab}{Tab}{shift up}
+          Send, %SkypeChannel%
+          Send, {Enter}
+          Send, %CompanyTag%%SkypeText%
+          ;Send, {Enter}
+          break
+        }
+     }
+  }  
+}
+
+SetVersionTags(Speed){
+  if ErrorLevel
+    return
+
+  InputBox, VersionTag, Eingabe, Versiontag eingeben:
+  if ErrorLevel
+    return
+
+  SetKeyDelay, %Speed%
+  Sleep, 200
+  ; Auslesen des Zwischenspeichers von Anfang bis Zeilenumbruch wobei CR als Ausschlusszeichen (OmitChar deklariert sein muss!)
+  ; ACHTUNG geht nicht mit ' sondern nur mit `
+  Loop, parse, clipboard, `n, `r
+  {
+    ; Mit dem Pfad aus der Zwischenablage die Datei öffnen
+    filereadline, LINETEXT, %A_LoopField%, 7
+    IfNotInString, LINETEXT, %VersionTag%
+    {
+      Run, notepad++.exe %A_LoopField%
+      Loop
+      {
+        IfWinActive, ahk_exe notepad++.exe
+        {
+          Sleep (%Speed%*2)
+          SendEvent {Down 6}
+          SendEvent {End}
+          SendEvent {Left}
+          SendEvent {,}
+          Send %VersionTag%
+          SendEvent ^s
+          SendEvent ^w
+          SendEvent !{F4}
+          Sleep, (%Speed%)
+          break
+        }
+      }
+    }
+  }
 }

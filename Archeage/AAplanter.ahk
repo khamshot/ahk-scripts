@@ -1,4 +1,5 @@
-﻿;Globals
+﻿; !=Alt, ^=Ctrl and +=Shift
+;Globals
 ;----------
 
 global X, Y, Liste, ListeTxt, TxtFile := "None", Prozess := "None", ChOnOff = 1,StopScript = false
