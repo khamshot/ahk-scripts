@@ -45,7 +45,7 @@ Playback(AAClient,fileName)
   {
     Loop, parse, A_LoopReadLine, `,
     {
-      if %A_Index% = 1 
+      if A_Index = 1 
         posX = %A_LoopField%
       else
         posY = %A_LoopField%
