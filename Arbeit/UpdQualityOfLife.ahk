@@ -118,7 +118,8 @@ SetVersionTags(Speed){
           SendEvent {End}
           SendEvent {Left}
           SendEvent {,}
-          Send %VersionTag%
+          ;Send %VersionTag%
+          writeFast(VersionTag)
           SendEvent ^s
           SendEvent ^w
           SendEvent !{F4}
@@ -128,4 +129,11 @@ SetVersionTags(Speed){
       }
     }
   }
+}
+
+writeFast(Text){
+  ClipSaved := ClipBoardAll
+  clipboard = %Text%
+  Send, ^v
+  clipboard := ClipSaved
 }
