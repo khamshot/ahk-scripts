@@ -1,8 +1,8 @@
 ﻿; !=Alt, ^=Ctrl and +=Shift
 ; make sure to run as Admin
-
 SetWorkingDir %A_ScriptDir%
-TrayTip ,Info ,Once you are done press Esc., 10, 33 
+
+TrayTip ,Info ,Once you are done press Esc., 15, 33 
 i := 0
 clickString := ""
 
@@ -10,13 +10,13 @@ clickString := ""
 ;----------
 
 LButton::
-  Click
   IfWinActive, ahk_class ArcheAge
   {
     i += 1
     MouseGetPos, X, Y
     clickString = %clickString%%X%,%Y%`n
   }
+  Click
   Sleep 100
 return
 

@@ -1,10 +1,9 @@
 ; !=Alt, ^=Ctrl and +=Shift
 ; make sure to run as Admin
-
-
-
 SetWorkingDir %A_ScriptDir%
+
 global AAClients := ""
+global AAClientsCount := 0
 
 ListAAInstances()
 
@@ -13,14 +12,17 @@ Loop, Parse, AAClients, `,
   MarkInstances(A_Index,A_Loopfield)
 }
 
-InputBox, AANumber, Input:, Enter AAInstance Number
-if ErrorLevel
-  ExitApp
-    
+if(AAClientsCount != 1)
+{
+  InputBox, AANumber, Input, Enter ArcheAge Instance Number (TopLeft of your Archeage Clients)
+  if ErrorLevel
+    ExitApp
+}
+ 
 Loop, Parse, AAClients, `,
 {
   DestroyMarks(A_Index)
-  if (%AANumber% = %A_Index%)
+  if(AANumber = %A_Index%)
     AAClient = %A_LoopField%
 }
 
@@ -83,6 +85,11 @@ ListAAInstances()
   {
     id := windows%A_Index%
     AAClients := AAClients . windows%A_Index% . "," 
+    AAClientsCount += 1
   } 
   AAClients := SubStr(AAClients,1,(StrLen(AAClients)-1))
 }
+
+Esc::
+  ExitApp
+return

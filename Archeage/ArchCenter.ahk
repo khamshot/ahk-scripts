@@ -1,4 +1,5 @@
 ; !=Alt, ^=Ctrl and +=Shift
+SetWorkingDir %A_ScriptDir%
 
 ;Keybinds
 ;----------
@@ -14,6 +15,17 @@
   }
 return
 
+;Lables
+;----------
+
+RecordClicks:
+  Run *RunAs RecordClicks.ahk
+return
+
+ReplayClicks:
+  Run *RunAs ReplayClicks.ahk
+return
+
 ;Functions
 ;----------
 
@@ -21,10 +33,10 @@ CreateGui(){
   Gui, Font, cWhite
   Gui, Color, Black
 
-  Gui, Add, Button, x20 y10 , Record Leftclicks
-  Gui, Add, Button, x170 y10 , Playback Leftclicks
+  Gui, Add, Button, x20 y10 gRecordClicks, Record Clicks
+  Gui, Add, Button, x20 y50 gReplayClicks, Replay Clicks
   
-  Gui, Show, x500 y500 w300 h300, ArchCenter
+  Gui, Show, x500 y500 w120 h150, ArchCenter
 }
 
 DestroyGui(){
