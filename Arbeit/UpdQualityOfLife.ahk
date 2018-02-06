@@ -27,13 +27,13 @@ return
 QFset:
   InputBox, CompanyTag, Eingabe: , Kundentag eingeben
   SkypeText := " wegen Update gesperrt. Nutzer werden gebeten die Datenbank zu verlassen."
-  PostInSkypeChat(CompanyTag,SkypeText,"MSU chat")
+  PostInSkypeChat(CompanyTag,SkypeText,"MSU Chat")
 return
 
 QFdismiss:
   InputBox, CompanyTag, Eingabe:, Kundentag eingeben
   SkypeText := " Update wurde durgeführt. Die Datenbank kann somit wieder genutzt werden."
-  PostInSkypeChat(CompanyTag,SkypeText,"MSU chat")
+  PostInSkypeChat(CompanyTag,SkypeText,"MSU Chat")
 return
 
 SetVersionTagSlow:
@@ -61,7 +61,7 @@ CreateGui(){
   Gui, Add, Button, x160 y50 gSetVersionTagSlow, Slow
   Gui, Add, Button, x210 y50 gSetVersionTagFast, Fast
   
-  Gui, Show, x500 y500 w300 h300, UpdateZULUL
+  Gui, Show, x500 y500 w300 h300, Update
 }
 
 DestroyGui(){
@@ -71,23 +71,23 @@ DestroyGui(){
 PostInSkypeChat(CompanyTag,SkypeText,SkypeChannel){
   if ErrorLevel
     return
-  IfWinExist, ahk_exe Skype.exe
-  {
-    WinActivate  
+    
+  SetKeyDelay, 100
+    WinActivate, Skype
     Loop
+    {
+      IfWinActive, ahk_exe Skype.exe
       {
-        IfWinActive, ahk_exe Skype.exe
-        {
-          Send, {alt down}1{alt up}
-          Send, {shift down}{Tab}{Tab}{Tab}{Tab}{Tab}{Tab}{Tab}{shift up}
-          Send, %SkypeChannel%
-          Send, {Enter}
-          Send, %CompanyTag%%SkypeText%
-          ;Send, {Enter}
-          break
-        }
-     }
-  }  
+        Send, {alt down}1{alt up}
+        Send, {shift down}{Tab}{Tab}{Tab}{Tab}{Tab}{Tab}{Tab}{shift up}
+        Send, %SkypeChannel%
+        Send, {Enter}
+        WriteFast(CompanyTag)
+        WriteFast(SkypeText)
+        ;Send, {Enter}
+        break
+      }
+   }
 }
 
 SetVersionTags(Speed){
