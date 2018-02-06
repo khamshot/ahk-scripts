@@ -26,13 +26,13 @@ return
 
 QFset:
   InputBox, CompanyTag, Eingabe: , Kundentag eingeben
-  SkypeText := " wegen Update gesperrt. Nutzer werden gebeten die Datenbank zu verlassen."
+  SkypeText := "wegen Update gesperrt. Nutzer werden gebeten die Datenbank zu verlassen."
   PostInSkypeChat(CompanyTag,SkypeText,"MSU Chat")
 return
 
 QFdismiss:
   InputBox, CompanyTag, Eingabe:, Kundentag eingeben
-  SkypeText := " Update wurde durgeführt. Die Datenbank kann somit wieder genutzt werden."
+  SkypeText := "Update wurde durgeführt. Die Datenbank kann somit wieder genutzt werden."
   PostInSkypeChat(CompanyTag,SkypeText,"MSU Chat")
 return
 
@@ -83,6 +83,7 @@ PostInSkypeChat(CompanyTag,SkypeText,SkypeChannel){
         Send, %SkypeChannel%
         Send, {Enter}
         WriteFast(CompanyTag)
+        Send, {Space}
         WriteFast(SkypeText)
         ;Send, {Enter}
         break
