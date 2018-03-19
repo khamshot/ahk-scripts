@@ -2,7 +2,7 @@
 ;Globals
 ;----------
 
-global X, Y, Keys, Liste := 0, Liste1, Liste2, Liste3, Liste4, Liste5, Liste6
+global minDelay = 100, maxDelay = 300, Clients, Clients1, Clients2, Clients3, Clients4
 
 ;Init
 ;----------
@@ -17,10 +17,6 @@ return
 GuiClose:
 	ExitApp
 	return
-	
-SuspendKeys:
-	Suspend
-	return
 
 RefreshAccounts:
 	FindAllPrograms()
@@ -34,37 +30,39 @@ CreateGui()
 	Gui, Color, Black
 	
 	Gui, Add, Text, x10 y10, make sure your fishing skills are on 1,2,3,4,5 !!!!
-	Gui, Add, Button, x10 y30 gSuspendKeys, On/Off
-	Gui, Add, Button, x60 y30 gRefreshAccounts, RefreshAccounts
+	Gui, Add, Button, x10 y30 gRefreshAccounts, RefreshAccounts
 	
-	Gui, Show, x100 y100 w300 h50, FamilyFishing
+	Gui, Show, x50 y700 w300 h60, FamilyFishing
 }
 
 FindAllPrograms()
 {
 	WinGet windows, List
-	Liste := 0
+	Clients := 0
 	Loop %windows%
 	{
 		id := windows%A_Index%
 		WinGetTitle wt, ahk_id %id%
 		IfInString, wt, ArcheAge
 		{
-			Liste := Liste + 1
-			Liste%Liste% := windows%A_Index%
+			Clients := Clients + 1
+			Clients%Clients% := windows%A_Index%
 		}
 	}
 	return 
 }
 
+;Binds
+;----------
+
 $1::
 	WinGet, winid ,, A
 	ControlSend,, 1, ahk_id %winid%
-	Loop %Liste%
+	Loop %Clients%
 	{
-		Random, Rng , 100, 300
+		Random, Rng , minDelay, maxDelay
 		Sleep %Rng%
-		id := Liste%A_Index%
+		id := Clients%A_Index%
 		if (id <> winid)
 			ControlSend,, 1, ahk_id %id%
 	}
@@ -73,11 +71,11 @@ $1::
 $2::
 	WinGet, winid ,, A
 	ControlSend,, 2, ahk_id %winid%
-	Loop %Liste%
+	Loop %Clients%
 	{
-		Random, Rng , 100, 300
+		Random, Rng , minDelay, maxDelay
 		Sleep %Rng%
-		id := Liste%A_Index%
+		id := Clients%A_Index%
 		if (id <> winid)
 			ControlSend,, 2, ahk_id %id%
 	}
@@ -86,11 +84,11 @@ $2::
 $3::
 	WinGet, winid ,, A
 	ControlSend,, 3, ahk_id %winid%
-	Loop %Liste%
+	Loop %Clients%
 	{
-		Random, Rng , 100, 300
+		Random, Rng , minDelay, maxDelay
 		Sleep %Rng%
-		id := Liste%A_Index%
+		id := Clients%A_Index%
 		if (id <> winid)
 			ControlSend,, 3, ahk_id %id%
 	}
@@ -99,11 +97,11 @@ $3::
 $4::
 	WinGet, winid ,, A
 	ControlSend,, 4, ahk_id %winid%
-	Loop %Liste%
+	Loop %Clients%
 	{
-		Random, Rng , 100, 300
+		Random, Rng , minDelay, maxDelay
 		Sleep %Rng%
-		id := Liste%A_Index%
+		id := Clients%A_Index%
 		if (id <> winid)
 			ControlSend,, 4, ahk_id %id%
 	}
@@ -112,16 +110,18 @@ $4::
 $5::
 	WinGet, winid ,, A
 	ControlSend,, 5, ahk_id %winid%
-	Loop %Liste%
+	Loop %Clients%
 	{
-		Random, Rng , 100, 300
+		Random, Rng , minDelay, maxDelay
 		Sleep %Rng%
-		id := Liste%A_Index%
+		id := Clients%A_Index%
 		if (id <> winid)
 			ControlSend,, 5, ahk_id %id%
 	}
 	return	
-	
+  
+;usespam for fast hand in
+
 *f::
 	Send,f
 	MouseClick, left, 475, 479
@@ -134,3 +134,4 @@ $5::
 		MouseClick, left, 475, 479
 		Sleep,20
 	}
+return
