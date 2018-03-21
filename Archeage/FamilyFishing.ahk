@@ -2,7 +2,7 @@
 ;Globals
 ;----------
 
-global minDelay = 100, maxDelay = 300, Clients, Clients1, Clients2, Clients3, Clients4
+global charName := "Kham", minDelay = 100, maxDelay = 300, Clients, Clients1, Clients2, Clients3, Clients4
 
 ;Init
 ;----------
@@ -134,4 +134,36 @@ $5::
 		MouseClick, left, 475, 479
 		Sleep,20
 	}
+return
+  
+$p::
+  WinGet, winid ,, A 
+  MouseGetPos, winX, winY
+  Setkeydelay, 10
+  
+	Loop %Clients%
+	{
+		Random, Rng , minDelay, maxDelay
+		Sleep %Rng%
+		id := Clients%A_Index%
+		if (id <> winid)
+    {
+      WinGetPos,,, W, H, ahk_id %id%
+      WinActivate, ahk_id %id%
+      W := W/2
+       
+      Send, {Enter}
+			Send, {shift down}
+      Send, 7
+      Send, {shift up}
+      Send, target{space}
+      Send, %charName%
+      Send, {Enter}
+      
+      MouseClick,,%W%, 40
+    }
+	}
+  Sleep, 50
+  WinActivate, ahk_id %winid%
+  MouseMove, winX, winY
 return
