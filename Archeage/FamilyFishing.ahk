@@ -37,16 +37,16 @@ CreateGui()
 
 FindAllPrograms()
 {
-	WinGet windows, List
+	WinGet id, List
 	Clients := 0
-	Loop %windows%
+	Loop %id%
 	{
-		id := windows%A_Index%
-		WinGetTitle wt, ahk_id %id%
+		this_id := id%A_Index%
+		WinGetClass wt, ahk_id %this_id%
 		IfInString, wt, ArcheAge
 		{
 			Clients := Clients + 1
-			Clients%Clients% := windows%A_Index%
+			Clients%Clients% := id%A_Index%
 		}
 	}
 	return 
