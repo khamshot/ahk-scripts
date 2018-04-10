@@ -4,6 +4,7 @@ SetWorkingDir %A_ScriptDir%
 
 global AAClients := ""
 global AAClientsCount := 0
+global AANumber := 1
 
 ListAAInstances()
 
@@ -18,11 +19,12 @@ if(AAClientsCount != 1)
   if ErrorLevel
     ExitApp
 }
- 
+AANumber += 0 
+
 Loop, Parse, AAClients, `,
 {
   DestroyMarks(A_Index)
-  if(AANumber = %A_Index%)
+  if AANumber = %A_Index%
     AAClient = %A_LoopField%
 }
 
