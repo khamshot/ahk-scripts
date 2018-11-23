@@ -2,15 +2,15 @@
 ;Globals
 ;----------
 
-global charName := "Kham", minDelay = 100, maxDelay = 300, Clients, Clients1, Clients2, Clients3, Clients4
+global minDelay = 700, maxDelay = 1000, Clients, Clients1, Clients2, Clients3, Clients4
 
 ;Init
 ;----------
 
 FindAllPrograms()
 Loop{
-  Sleep 18000
   SendKeys()
+  Sleep 18000
 }
 return
 

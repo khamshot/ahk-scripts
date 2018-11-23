@@ -55,9 +55,12 @@ Playback(AAClient,fileName)
         posY = %A_LoopField%
     }
     Sleep 40
+    Send 3
+    Send 2
     Send 1
     MouseMove, %posX%,%posY%
     Sleep 1100
+    Click %posX%,%posY%
     Click %posX%,%posY%
     Sleep 50
     Click right
