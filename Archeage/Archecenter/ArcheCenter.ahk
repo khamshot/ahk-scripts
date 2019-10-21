@@ -4,78 +4,129 @@ CoordMode, Pixel, Screen
 
 ;Globals
 
-global ProcessID, WindowX := 300, WindowY := 300, IsFishing := false, FirmLeftX, FirmLeftY, FirmRightX, FirmRightY, SlackX, SlackY, ReelX, ReelY, BigReelX, BigReelY
+global ProcessID, WindowX := 300, WindowY := 300, SendToProcess := false, IsFishing := false, CurrentSkill := 0, FirmLeftX, FirmLeftY, FirmRightX, FirmRightY, SlackX, SlackY, ReelX, ReelY, BigReelX, BigReelY
 
 ;Init
 ;----------
 
 LoadFishingSkills(false)
-LoadWindowPosition()
+LoadSettings()
 FindArcheageProcess(false)
 
 Loop
 {
   RngSleep()
+  
   If IsFishing
   {
-    MinX := FirmLeftX-3
-    MaxX := FirmLeftX+3
-    MinY := FirmLeftY-3
-    MaxY := FirmLeftY+3
-    PixelSearch, X, Y, %MinX%, %MinY%, %MaxX%, %MaxY%, 0xf9994a , 20, Fast RGB
-    if !Errorlevel
+    ;FirmLeft
+    If (CurrentSkill != 1)
     {
-      send,1
-      SkillHoldSleep()
+      MinX := FirmLeftX-3
+      MaxX := FirmLeftX+3
+      MinY := FirmLeftY-3
+      MaxY := FirmLeftY+3
+      PixelSearch, X, Y, %MinX%, %MinY%, %MaxX%, %MaxY%, 0xf9994a , 20, Fast RGB
+      if !Errorlevel
+      {
+        if SendToProcess
+        {
+          ControlSend,, 1, ahk_id %ProcessID%
+        }else
+        {
+          send,1
+        }
+        CurrentSkill := 1
+      }
     }
     
-    MinX := FirmRightX-3
-    MaxX := FirmRightX+3
-    MinY := FirmRightY-3
-    MaxY := FirmRightY+3
-    PixelSearch, X, Y, %MinX%, %MinY%, %MaxX%, %MaxY%, 0xf9994a , 20, Fast RGB
-    if !Errorlevel
+    ;FirmRight
+    If (CurrentSkill != 2)
     {
-      send,2
-      SkillHoldSleep()
+      MinX := FirmRightX-3
+      MaxX := FirmRightX+3
+      MinY := FirmRightY-3
+      MaxY := FirmRightY+3
+      PixelSearch, X, Y, %MinX%, %MinY%, %MaxX%, %MaxY%, 0xf9994a , 20, Fast RGB
+      if !Errorlevel
+      {
+        if SendToProcess
+        {
+          ControlSend,, 2, ahk_id %ProcessID%
+        }else
+        {
+          send,2
+        }
+        CurrentSkill := 2
+      }
     }
     
-    MinX := SlackX-3
-    MaxX := SlackX+3
-    MinY := SlackY-3
-    MaxY := SlackY+3
-    PixelSearch, X, Y, %MinX%, %MinY%, %MaxX%, %MaxY%, 0xf9994a , 20, Fast RGB
-    if !Errorlevel
+    ;Slack
+    If (CurrentSkill != 3)
     {
-      send,3
-      SkillHoldSleep()
+      MinX := SlackX-3
+      MaxX := SlackX+3
+      MinY := SlackY-3
+      MaxY := SlackY+3
+      PixelSearch, X, Y, %MinX%, %MinY%, %MaxX%, %MaxY%, 0xf9994a , 20, Fast RGB
+      if !Errorlevel
+      {
+        if SendToProcess
+        {
+          ControlSend,, 3, ahk_id %ProcessID%
+        }else
+        {
+          send,3
+        }
+        CurrentSkill := 3
+      }
     }
     
-    MinX := ReelX-3
-    MaxX := ReelX+3
-    MinY := ReelY-3
-    MaxY := ReelY+3
-    PixelSearch, X, Y, %MinX%, %MinY%, %MaxX%, %MaxY%, 0xf9994a , 20, Fast RGB
-    if !Errorlevel
+    ;Reel
+    If (CurrentSkill != 4)
     {
-      send,4
-      SkillHoldSleep()
+      MinX := ReelX-3
+      MaxX := ReelX+3
+      MinY := ReelY-3
+      MaxY := ReelY+3
+      PixelSearch, X, Y, %MinX%, %MinY%, %MaxX%, %MaxY%, 0xf9994a , 20, Fast RGB
+      if !Errorlevel
+      {
+        if SendToProcess
+        {
+          ControlSend,, 4, ahk_id %ProcessID%
+        }else
+        {
+          send,4
+        }
+        CurrentSkill := 4
+      }
     }
     
-    MinX := BigReelX-3
-    MaxX := BigReelX+3
-    MinY := BigReelY-3
-    MaxY := BigReelY+3
-    PixelSearch, X, Y, %MinX%, %MinY%, %MaxX%, %MaxY%, 0xf9994a , 20, Fast RGB
-    if !Errorlevel
+    ;BigReel
+    If (CurrentSkill != 5)
     {
-      send,5
-      SkillHoldSleep()
+      MinX := BigReelX-3
+      MaxX := BigReelX+3
+      MinY := BigReelY-3
+      MaxY := BigReelY+3
+      PixelSearch, X, Y, %MinX%, %MinY%, %MaxX%, %MaxY%, 0xf9994a , 20, Fast RGB
+      if !Errorlevel
+      {
+        if SendToProcess
+        {
+          ControlSend,, 5, ahk_id %ProcessID%
+        }else
+        {
+          send,5
+        }
+        CurrentSkill := 5
+      }
     }
     
   }else
   {
-    sleep, 10000
+    sleep, 1000
   }
 }
 
@@ -101,26 +152,29 @@ CreateGui()
   gui, +AlwaysOnTop
   gui, Font, cWhite
   gui, Color, Black
-
+  gui, -SysMenu
+  
   gui, Add, Picture, x20 y10 w30 h30 gSetPosFirmLeft, Firmleft.png
   gui, Add, Picture, x60 y10 w30 h30 gSetPosFirmRight, Firmright.png
   gui, Add, Picture, x100 y10 w30 h30 gSetPosSlack, Slack.png
   gui, Add, Picture, x140 y10 w30 h30 gSetPosReel, Reel.png
   gui, Add, Picture, x180 y10 w30 h30 gSetPosBigreel, BigReel.png
   
-  gui, Add, Button, x20 y50 w190 h20 gLoadFishingSkills, Apply Fishing Skill Positions
+  gui, Add, Checkbox,  x20 y55 vSendToProcess
+  gui, Add, Text, x50 y55, Send To Process
   
-  gui, Add, Button, x20 y80 w190 h20 gFindArcheageProcess, Find Archeage Process
+  gui, Add, Button, x20 y80 w190 h20 gApplyFishingSkills, Apply Fishing Settings
   
-  gui, Add, Text, x20 y110, Archeage Process ID:
-  gui, Add, Text, x135 y110, %ProcessID%
+  gui, Add, Button, x20 y110 w190 h20 gTestSkillPositions, Test Skill Positions
   
   gui, Add, Button, x20 y140 w80 h20 gStartFishing, Start Fishing
   gui, Add, Button, x130 y140 w80 h20 gStopFishing, Stop Fishing
   
-  gui, Add, Button, x20 y170 w190 h20 gTestSkillPositions, Test Skill Positions
+  gui, Add, Button, x20 y170 w190 h20 gFindArcheageProcess, Find Archeage Process
+  gui, Add, Text, x20 y200, Archeage Process ID:
+  gui, Add, Text, x135 y200, %ProcessID%
   
-  gui, Show, x%WindowX% y%WindowY% w230 h200, ArchCenter
+  gui, Show, x%WindowX% y%WindowY% w230 h230, ArchCenter
 }
 
 DestroyGui()
@@ -151,8 +205,9 @@ SetPosBigReel:
   StoreFishingSkillPosition("BigReel")
 return
 
-gLoadFishingSkills:
+ApplyFishingSkills:
   LoadFishingSkills(true)
+  gui, Submit, NoHide
 return
 
 FindArcheageProcess:
@@ -192,6 +247,8 @@ FindArcheageProcess(WithConfirm)
    
   if WithConfirm
   {
+    DestroyGui()
+    CreateGui()
     if !IsValidProcess()
     {
       msgbox, Archeage process not found!
@@ -239,11 +296,11 @@ LoadFishingSkills(WithConfirm)
   
   If WithConfirm
   {
-    msgbox, Fishing skill positions applied!
+    msgbox, Fishing settings applied!
   }
 }
 
-LoadWindowPosition()
+LoadSettings()
 {
   IniRead, WindowX, UserSettings.ini, General, WindowX
   IniRead, WindowY, UserSettings.ini, General, WindowY
@@ -268,9 +325,4 @@ RngSleep()
 {
   Random,Rng, 150, 300
   Sleep, %Rng%
-}
-
-SkillHoldSleep()
-{
-  Sleep, 5000
 }
