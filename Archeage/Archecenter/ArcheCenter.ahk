@@ -4,7 +4,7 @@ CoordMode, Pixel, Screen
 
 ;Globals
 
-global ProcessID, WindowX := 300, WindowY := 300, SendToProcess := false, IsFishing := false, CurrentSkill := 0, FirmLeftX, FirmLeftY, FirmRightX, FirmRightY, SlackX, SlackY, ReelX, ReelY, BigReelX, BigReelY
+global ProcessID, WindowX := 300, WindowY := 300, IsFishing := false, CurrentSkill := 0, FirmLeftX, FirmLeftY, FirmRightX, FirmRightY, SlackX, SlackY, ReelX, ReelY, BigReelX, BigReelY
 
 ;Init
 ;----------
@@ -29,13 +29,7 @@ Loop
       PixelSearch, X, Y, %MinX%, %MinY%, %MaxX%, %MaxY%, 0xf9994a , 20, Fast RGB
       if !Errorlevel
       {
-        if SendToProcess
-        {
-          ControlSend,, 1, ahk_id %ProcessID%
-        }else
-        {
-          send,1
-        }
+        ControlSend,, 1, ahk_id %ProcessID%
         CurrentSkill := 1
       }
     }
@@ -50,13 +44,7 @@ Loop
       PixelSearch, X, Y, %MinX%, %MinY%, %MaxX%, %MaxY%, 0xf9994a , 20, Fast RGB
       if !Errorlevel
       {
-        if SendToProcess
-        {
-          ControlSend,, 2, ahk_id %ProcessID%
-        }else
-        {
-          send,2
-        }
+        ControlSend,, 2, ahk_id %ProcessID%
         CurrentSkill := 2
       }
     }
@@ -71,13 +59,7 @@ Loop
       PixelSearch, X, Y, %MinX%, %MinY%, %MaxX%, %MaxY%, 0xf9994a , 20, Fast RGB
       if !Errorlevel
       {
-        if SendToProcess
-        {
-          ControlSend,, 3, ahk_id %ProcessID%
-        }else
-        {
-          send,3
-        }
+        ControlSend,, 3, ahk_id %ProcessID%
         CurrentSkill := 3
       }
     }
@@ -92,13 +74,7 @@ Loop
       PixelSearch, X, Y, %MinX%, %MinY%, %MaxX%, %MaxY%, 0xf9994a , 20, Fast RGB
       if !Errorlevel
       {
-        if SendToProcess
-        {
-          ControlSend,, 4, ahk_id %ProcessID%
-        }else
-        {
-          send,4
-        }
+        ControlSend,, 4, ahk_id %ProcessID%
         CurrentSkill := 4
       }
     }
@@ -113,13 +89,7 @@ Loop
       PixelSearch, X, Y, %MinX%, %MinY%, %MaxX%, %MaxY%, 0xf9994a , 20, Fast RGB
       if !Errorlevel
       {
-        if SendToProcess
-        {
-          ControlSend,, 5, ahk_id %ProcessID%
-        }else
-        {
-          send,5
-        }
+        ControlSend,, 5, ahk_id %ProcessID%
         CurrentSkill := 5
       }
     }
@@ -160,19 +130,18 @@ CreateGui()
   gui, Add, Picture, x140 y10 w30 h30 gSetPosReel, Reel.png
   gui, Add, Picture, x180 y10 w30 h30 gSetPosBigreel, BigReel.png
   
-  gui, Add, Checkbox,  x20 y55 vSendToProcess
-  gui, Add, Text, x50 y55, Send To Process
+  gui, Add, Button, x20 y50 w190 h20 gApplyFishingSkills, Apply Fishing Settings
   
-  gui, Add, Button, x20 y80 w190 h20 gApplyFishingSkills, Apply Fishing Settings
+  gui, Add, Button, x20 y80 w190 h20 gTestSkillPositions, Test Skill Positions
   
-  gui, Add, Button, x20 y110 w190 h20 gTestSkillPositions, Test Skill Positions
+  gui, Add, Button, x20 y110 w80 h20 gStartFishing, Start Fishing
+  gui, Add, Button, x130 y110 w80 h20 gStopFishing, Stop Fishing
   
-  gui, Add, Button, x20 y140 w80 h20 gStartFishing, Start Fishing
-  gui, Add, Button, x130 y140 w80 h20 gStopFishing, Stop Fishing
+  gui, Add, Button, x20 y140 w190 h20 gFindArcheageProcess, Find Archeage Process
+  gui, Add, Text, x20 y170, Archeage Process ID:
+  gui, Add, Text, x135 y170, %ProcessID%
   
-  gui, Add, Button, x20 y170 w190 h20 gFindArcheageProcess, Find Archeage Process
-  gui, Add, Text, x20 y200, Archeage Process ID:
-  gui, Add, Text, x135 y200, %ProcessID%
+  gui, Add, Button, x20 y200 w80 h20 gStartAntiAfk, Start AntiAfk
   
   gui, Show, x%WindowX% y%WindowY% w230 h230, ArchCenter
 }
@@ -228,6 +197,10 @@ TestSkillPositions:
   TestSkillPositions()
 return
  
+StartAntiAfk:
+  StartAntiAfk()
+return 
+ 
 ;Functions
 ;----------
 
@@ -269,6 +242,18 @@ IsValidProcess()
   return true
 }
 
+StartAntiAfk()
+{
+  if !IsValidProcess()
+  {
+    msgbox, Archeage process not found!
+    return
+  }
+  PopUpX := WindowX
+  PopUpY := WindowY + 230
+  run, *RunAs AntiAfk.ahk %ProcessID% %PopUpX% %PopUpY% 
+}
+
 StoreFishingSkillPosition(FishingSkill)
 {
   if !IsValidProcess()
@@ -277,7 +262,7 @@ StoreFishingSkillPosition(FishingSkill)
     return
   }
   PopUpX := WindowX
-  PopUpY := WindowY + 200
+  PopUpY := WindowY + 230
   run, *RunAs SkillPosition.ahk UserSettings.ini %FishingSkill% %ProcessID% %PopUpX% %PopUpY% 
 }
 
