@@ -142,6 +142,7 @@ CreateGui()
   gui, Add, Text, x135 y170, %ProcessID%
   
   gui, Add, Button, x20 y200 w80 h20 gStartAntiAfk, Start AntiAfk
+  gui, Add, Button, x130 y200 w80 h20 gStartFireballFarming, Start Farming
   
   gui, Show, x%WindowX% y%WindowY% w230 h230, ArchCenter
 }
@@ -200,6 +201,10 @@ return
 StartAntiAfk:
   StartAntiAfk()
 return 
+
+StartFireballFarming:
+  StartFireballFarming()
+return  
  
 ;Functions
 ;----------
@@ -252,6 +257,18 @@ StartAntiAfk()
   PopUpX := WindowX
   PopUpY := WindowY + 230
   run, *RunAs AntiAfk.ahk %ProcessID% %PopUpX% %PopUpY% 
+}
+
+StartFireballFarming()
+{
+  if !IsValidProcess()
+  {
+    msgbox, Archeage process not found!
+    return
+  }
+  PopUpX := WindowX
+  PopUpY := WindowY + 230
+  run, *RunAs FireballFarming.ahk %ProcessID% %PopUpX% %PopUpY% 
 }
 
 StoreFishingSkillPosition(FishingSkill)
