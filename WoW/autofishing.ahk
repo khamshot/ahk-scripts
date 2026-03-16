@@ -20,7 +20,7 @@ LineColor     := 0x4A8FFF  ; bright blue fishing line - use F7 to recapture if o
 LineVariation := 25        ; color tolerance
 ScanWidth     := 600       ; horizontal scan area (centered)
 ScanHeight    := 400       ; vertical scan area (centered, offset up)
-ScanOffsetY   := -310      ; shift scan area upward
+ScanOffsetY   := -315      ; shift scan area upward
 
 global Fishing := false
 global LineX := 0
