@@ -25,7 +25,7 @@ ScanOffsetY   := -315      ; shift scan area upward
 ; --- Lure (fishing line) reapplication ---
 LureKey          := "sc003"    ; scan code for "2" (WoW reads scan codes; sc002=1, sc003=2, sc004=3, ...)
 LureInitialDelay := 30000      ; ms after F5 before first lure application
-LureInterval     := 600000     ; ms between lure applications (10 min)
+LureInterval     := 630000     ; ms between lure applications (10 min)
 LureCastWait     := 6000       ; ms to wait for lure cast time to complete
 
 global Fishing := false
