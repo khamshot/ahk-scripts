@@ -15,15 +15,22 @@ SetMouseDelay, 10
 FishingKey    := "1"       ; Your fishing keybind
 CastDelay     := 2500      ; ms after casting before scanning
 MaxWaitTime   := 30000     ; ms to wait for a bite
-DipThreshold  := 5        ; px the lowest pixel must drop to count as a bite
+DipThreshold  := 6        ; px the lowest pixel must drop to count as a bite
 LineColor     := 0x4A8FFF  ; bright blue fishing line - use F7 to recapture if off
 LineVariation := 25        ; color tolerance
 ScanWidth     := 600       ; horizontal scan area (centered)
 ScanHeight    := 400       ; vertical scan area (centered, offset up)
 ScanOffsetY   := -315      ; shift scan area upward
 
+; --- Lure (fishing line) reapplication ---
+LureKey          := "sc003"    ; scan code for "2" (WoW reads scan codes; sc002=1, sc003=2, sc004=3, ...)
+LureInitialDelay := 30000      ; ms after F5 before first lure application
+LureInterval     := 600000     ; ms between lure applications (10 min)
+LureCastWait     := 6000       ; ms to wait for lure cast time to complete
+
 global Fishing := false
 global LineX := 0
+global NextLureTime := 0
 
 ShowInfoScreen()
 return
@@ -56,26 +63,33 @@ ShowInfoScreen() {
     Gui, Info:Add, Text, x20 y194 w460, - Keine andere Faehigkeit darf auf Taste 1 liegen
 
     Gui, Info:Font, s10 bold cFFD700, Segoe UI
-    Gui, Info:Add, Text, x20 y224 w460, ANGELSCHNUR-FARBE
+    Gui, Info:Add, Text, x20 y224 w460, KOEDER / FISHING LURE
     Gui, Info:Font, s9 norm cCCCCCC, Segoe UI
-    Gui, Info:Add, Text, x20 y244 w460, - Angel auswerfen, dann F7 druecken solange die Schnur sichtbar ist
-    Gui, Info:Add, Text, x20 y262 w460, - Ein Fenster oeffnet sich - einfach auf die Schnur klicken
-    Gui, Info:Add, Text, x20 y280 w460, - Mausposition spielt keine Rolle
+    Gui, Info:Add, Text, x20 y244 w460, - Makro erstellen: /use <Koeder-Name> dann /use 16
+    Gui, Info:Add, Text, x20 y262 w460, - Makro auf Aktionsleiste Taste 2 legen
+    Gui, Info:Add, Text, x20 y280 w460, - Wird automatisch alle 10 Minuten neu angewendet (30s nach F5)
 
     Gui, Info:Font, s10 bold cFFD700, Segoe UI
-    Gui, Info:Add, Text, x20 y310 w460, HOTKEYS
+    Gui, Info:Add, Text, x20 y310 w460, ANGELSCHNUR-FARBE
     Gui, Info:Font, s9 norm cCCCCCC, Segoe UI
-    Gui, Info:Add, Text, x20 y330 w460, F5  -  Angeln starten
-    Gui, Info:Add, Text, x20 y348 w460, F6  -  Angeln stoppen
-    Gui, Info:Add, Text, x20 y366 w460, F7  -  Schnurfarbe per KI erfassen (Schnur muss im Scan-Bereich sichtbar sein)
-    Gui, Info:Add, Text, x20 y384 w460, F8  -  Scan-Bereich kurz anzeigen
+    Gui, Info:Add, Text, x20 y330 w460, - Angel auswerfen, dann F7 druecken solange die Schnur sichtbar ist
+    Gui, Info:Add, Text, x20 y348 w460, - Ein Fenster oeffnet sich - einfach auf die Schnur klicken
+    Gui, Info:Add, Text, x20 y366 w460, - Mausposition spielt keine Rolle
+
+    Gui, Info:Font, s10 bold cFFD700, Segoe UI
+    Gui, Info:Add, Text, x20 y396 w460, HOTKEYS
+    Gui, Info:Font, s9 norm cCCCCCC, Segoe UI
+    Gui, Info:Add, Text, x20 y416 w460, F5  -  Angeln starten
+    Gui, Info:Add, Text, x20 y434 w460, F6  -  Angeln stoppen
+    Gui, Info:Add, Text, x20 y452 w460, F7  -  Schnurfarbe per KI erfassen (Schnur muss im Scan-Bereich sichtbar sein)
+    Gui, Info:Add, Text, x20 y470 w460, F8  -  Scan-Bereich kurz anzeigen
 
     Gui, Info:Font, s9 norm c888888, Segoe UI
-    Gui, Info:Add, Text, x20 y414 w460, Skript als Administrator ausfuehren fuer beste Ergebnisse.
+    Gui, Info:Add, Text, x20 y500 w460, Skript als Administrator ausfuehren fuer beste Ergebnisse.
 
     Gui, Info:Font, s10 bold cFFFFFF, Segoe UI
-    Gui, Info:Add, Button, x175 y440 w150 h30 gCloseInfoScreen, Verstanden
-    Gui, Info:Show, w500 h490, WoW AutoFisher
+    Gui, Info:Add, Button, x175 y526 w150 h30 gCloseInfoScreen, Verstanden
+    Gui, Info:Show, w500 h576, WoW AutoFisher
 }
 
 CloseInfoScreen:
@@ -83,8 +97,9 @@ CloseInfoScreen:
 return
 
 StartFishing() {
-    global Fishing
+    global Fishing, NextLureTime, LureInitialDelay
     Fishing := true
+    NextLureTime := A_TickCount + LureInitialDelay
     ToolTip, AutoFishing ON - F6 to stop
     SetTimer, RemoveTooltip, -2000
     FishingLoop()
@@ -278,6 +293,7 @@ FindLowestInBand(bandTop, bandBot) {
 
 FishingLoop() {
     global Fishing, FishingKey, CastDelay, MaxWaitTime, DipThreshold
+    global LureKey, LureInterval, LureCastWait, NextLureTime
 
     while (Fishing) {
         ; Cast
@@ -334,6 +350,22 @@ FishingLoop() {
         if (!caught && Fishing) {
             ToolTip, Timeout - recasting
             SetTimer, RemoveTooltip, -1000
+        }
+
+        ; --- Lure reapplication ---
+        ; Only fires after a successful catch (not on timeout) so the rod is idle.
+        if (Fishing && caught && A_TickCount >= NextLureTime) {
+            Sleep, 500
+            ToolTip, Applying fishing lure...
+            Send, {Shift up}{Ctrl up}{Alt up}
+            Sleep, 50
+            Send, {%LureKey% down}
+            Sleep, 80
+            Send, {%LureKey% up}
+            Sleep, %LureCastWait%
+            NextLureTime := A_TickCount + LureInterval
+            ToolTip, Lure applied - next in 10 min
+            SetTimer, RemoveTooltip, -2000
         }
 
         Sleep, 400 + RandomDelay()
