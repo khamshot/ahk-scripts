@@ -359,6 +359,10 @@ FishingLoop() {
             ToolTip, Applying fishing lure...
             Send, {Shift up}{Ctrl up}{Alt up}
             Sleep, 50
+            ; Jump first — clears any open frame (loot window, inventory-full
+            ; popup) so the action bar keypress actually registers.
+            Send, {Space}
+            Sleep, 900
             Send, {%LureKey% down}
             Sleep, 80
             Send, {%LureKey% up}
